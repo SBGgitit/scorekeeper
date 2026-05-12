@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+
+  <!-- PWA / iOS fullscreen -->
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Scorekeeper"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#0d0d0d"/>
+
+  <title>Scorekeeper 🎱</title>
+  <link rel="manifest" href="manifest.json"/>
+
+  <!-- Prevent bounce/scroll on iOS -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #0d0d0d;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      overscroll-behavior: none;
+    }
+    #root { width: 100%; height: 100%; }
+    /* Prevent iOS text size adjustment */
+    body { -webkit-text-size-adjust: 100%; }
+  </style>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+
+  <!-- React + Babel (CDN — no build step needed) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Firebase (v9 compat — simple global API) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <!-- ── FIREBASE CONFIG ── Paste your config here ── -->
+  <script>
+    // TODO: Replace with your Firebase project config
+    // 1. Go to https://console.firebase.google.com
+    // 2. Create a project (free Spark plan)
+    // 3. Add a web app, copy the config object here
+    // 4. In Realtime Database → Rules, set both read/write to true for testing:
+    //    { "rules": { ".read": true, ".write": true } }
+ const firebaseConfig = {
+  apiKey: "AIzaSyBZygXzD4PCymUTr8N04mzchqT5U6CMrx8",
+  authDomain: "poscrsbg.firebaseapp.com",
+  databaseURL: "https://poscrsbg-default-rtdb.firebaseio.com",
+  projectId: "poscrsbg",
+  storageBucket: "poscrsbg.firebasestorage.app",
+  messagingSenderId: "619992133829",
+  appId: "1:619992133829:web:6cc4203541aea09d5800ac"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+    // Room ID — all devices sharing this ID play together.
+    // Change it to start a fresh game session. Use any string.
+    const ROOM_ID = "table-1";
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="app.js"></script>
+</body>
+</html>
