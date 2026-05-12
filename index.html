@@ -1,59 +1,38 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Scorekeeper"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0d0d0d"/>
+<title>Scorekeeper 🎱</title>
+<link rel="manifest" href="manifest.json"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0d0d0d;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:auto;overscroll-behavior:none;
+  -webkit-text-size-adjust:100%}
+#root{width:100%;height:100%}
+input,textarea{-webkit-user-select:auto!important;user-select:auto!important}
+.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+@keyframes flashOut{0%{opacity:1}100%{opacity:0}}
+@keyframes toastPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.82)}30%{opacity:1;transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0}}
+@keyframes cfall{0%{transform:translateY(-30px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes vpop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.07)}100%{transform:scale(1);opacity:1}}
+@keyframes vpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.22;transform:scale(2.1)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
 
-  <!-- PWA / iOS fullscreen -->
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Scorekeeper"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="theme-color" content="#0d0d0d"/>
-
-  <title>Scorekeeper 🎱</title>
-  <link rel="manifest" href="manifest.json"/>
-
-  <!-- Prevent bounce/scroll on iOS -->
-  <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      overflow: hidden;
-      background: #0d0d0d;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-      overscroll-behavior: none;
-    }
-    #root { width: 100%; height: 100%; }
-    /* Prevent iOS text size adjustment */
-    body { -webkit-text-size-adjust: 100%; }
-  </style>
-
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet"/>
-
-  <!-- React + Babel (CDN — no build step needed) -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- Firebase (v9 compat — simple global API) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
-  <!-- ── FIREBASE CONFIG ── Paste your config here ── -->
-  <script>
-    // TODO: Replace with your Firebase project config
-    // 1. Go to https://console.firebase.google.com
-    // 2. Create a project (free Spark plan)
-    // 3. Add a web app, copy the config object here
-    // 4. In Realtime Database → Rules, set both read/write to true for testing:
-    //    { "rules": { ".read": true, ".write": true } }
-    const FIREBASE_CONFIG = {
+<!-- ═══════════════════════ FIREBASE CONFIG — edit here ═══════════════════════ -->
+<script>
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyB-3LBri0LPGpdgvI0cBvwzyqDE0BCW304",
   authDomain: "pooltimego.firebaseapp.com",
   databaseURL: "https://pooltimego-default-rtdb.firebaseio.com",
@@ -62,171 +41,52 @@
   messagingSenderId: "1074352863595",
   appId: "1:1074352863595:web:dbc4ee9986ef1ed368b42e"
 };
+const ROOM_ID = "table-1";
+</script>
+<!-- ════════════════════════════════════════════════════════════════════════════ -->
 
-    const ROOM_ID = "table-1";
-  </script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <script>
-    window.addEventListener('error', function(e) {
-      document.getElementById('root').innerHTML = 
-        '<div style="color:#ff6666;padding:20px;font-family:monospace;font-size:13px;background:#111;height:100vh;overflow:auto">' +
-        '<h2 style="color:#FFD700">⚠️ Erreur de chargement</h2>' +
-        '<pre>' + (e.message || 'Unknown error') + '\n' + (e.filename || '') + ':' + (e.lineno || '') + '</pre>' +
-        '<p style="color:#888">Vérifiez la console Safari (Réglages > Safari > Avancé > Inspecteur web)</p>' +
-        '</div>';
-    });
-  </script>
-
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel">
-// ── Scorekeeper Billard — app.js ──────────────────────────────────────────────
-// React 18 + Firebase Realtime Database
-// Compiled in-browser by Babel standalone (no build step)
-
-const { useState, useEffect, useRef } = React;
-
-const MIN_P = 2, MAX_P = 6;
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback} = React;
 const F = "'Outfit',sans-serif";
-const LONG_PRESS_MS = 550;
-const VERSION = "2025.05.12.6-pwa";
+const VERSION = "2025.05.13.1";
+const MIN_P=2, MAX_P=6, LONG_PRESS_MS=550;
 
-// ── Firebase sync ─────────────────────────────────────────────────────────────
-let _db = null;
-let _dbRef = null;
-
-function initFirebase() {
-  try {
-    firebase.app(); // already initialized
-  } catch(e) {
-    firebase.initializeApp(FIREBASE_CONFIG);
-  }
+// ── Firebase ──────────────────────────────────────────────────────────────────
+let _db=null;
+function initFB(){
+  try{ firebase.app(); }catch(e){ firebase.initializeApp(FIREBASE_CONFIG); }
   _db = firebase.database();
-  _dbRef = _db.ref(`rooms/${ROOM_ID}/state`);
 }
+const ref = path => _db.ref(path);
 
-async function loadState() {
-  return new Promise(resolve => {
-    if(!_dbRef){ resolve(null); return; }
-    _dbRef.once('value', snap => {
-      resolve(snap.exists() ? snap.val() : null);
-    }, () => resolve(null));
-  });
-}
+// Game state — /rooms/ROOM_ID/state
+async function loadGameState(){ try{ const s=await ref(`rooms/${ROOM_ID}/state`).once('value'); return s.exists()?s.val():null; }catch(_){return null;} }
+async function saveGameState(s){ try{ await ref(`rooms/${ROOM_ID}/state`).set(s); }catch(_){} }
+function subscribeGame(cb){ const r=ref(`rooms/${ROOM_ID}/state`); r.on('value',s=>{if(s.exists())cb(s.val());}); return()=>r.off('value'); }
 
-async function saveState(s) {
-  if(!_dbRef) return;
-  try { await _dbRef.set(s); } catch(_) {}
-}
+// Global player profiles — /players/PLAYER_ID
+async function loadAllProfiles(){ try{ const s=await ref('players').once('value'); return s.exists()?Object.values(s.val()):[];  }catch(_){return[];} }
+async function saveProfile(p){ try{ await ref(`players/${p.id}`).set(p); }catch(_){} }
+async function deleteProfile(id){ try{ await ref(`players/${id}`).remove(); }catch(_){} }
+function subscribeProfiles(cb){ const r=ref('players'); r.on('value',s=>{ cb(s.exists()?Object.values(s.val()):[]);}); return()=>r.off('value'); }
 
-function subscribeState(callback) {
-  if(!_dbRef) return ()=>{};
-  const handler = snap => {
-    if(snap.exists()) callback(snap.val());
-  };
-  _dbRef.on('value', handler);
-  return () => _dbRef.off('value', handler);
-}
+// Game history — /rooms/ROOM_ID/history
+async function saveGameHistory(game){ try{ await ref(`rooms/${ROOM_ID}/history`).push(game); }catch(_){} }
+async function loadGameHistory(){ try{ const s=await ref(`rooms/${ROOM_ID}/history`).orderByKey().limitToLast(20).once('value'); if(!s.exists())return[]; return Object.values(s.val()).reverse(); }catch(_){return[];} }
 
-// ── Victory audio ─────────────────────────────────────────────────────────────
-const SFX = [
-  "https://www.soundjay.com/misc/sounds/fanfare-1.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
-  "https://www.soundjay.com/human/sounds/applause-8.mp3",
-];
-function playWin(){ try{ const a=new Audio(SFX[Math.floor(Math.random()*SFX.length)]);a.volume=.7;a.play().catch(()=>{}); }catch(_){} }
+// localStorage — remember which profiles belong to this device
+function getMyProfileIds(){ try{ return JSON.parse(localStorage.getItem('myProfiles')||'[]'); }catch(_){return[];} }
+function addMyProfileId(id){ const ids=getMyProfileIds(); if(!ids.includes(id)){ ids.push(id); localStorage.setItem('myProfiles',JSON.stringify(ids)); } }
+function removeMyProfileId(id){ const ids=getMyProfileIds().filter(x=>x!==id); localStorage.setItem('myProfiles',JSON.stringify(ids)); }
 
-// ── Audio engine ──────────────────────────────────────────────────────────────
-let _actx = null;
-function getCtx(){
-  if(!_actx) try{ _actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(_){}
-  if(_actx?.state==='suspended') _actx.resume();
-  return _actx;
-}
-function playPositivePing(){
-  const ctx=getCtx();if(!ctx)return;
-  const t=ctx.currentTime,osc=ctx.createOscillator(),gain=ctx.createGain();
-  osc.type='sine';
-  osc.frequency.setValueAtTime(660,t);
-  osc.frequency.exponentialRampToValueAtTime(1320,t+0.06);
-  gain.gain.setValueAtTime(0,t);
-  gain.gain.linearRampToValueAtTime(0.45,t+0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001,t+0.55);
-  osc.connect(gain);gain.connect(ctx.destination);
-  osc.start(t);osc.stop(t+0.55);
-}
-function playNegativeBuzz(){
-  const ctx=getCtx();if(!ctx)return;
-  [0,0.20].forEach(offset=>{
-    const t=ctx.currentTime+offset,osc=ctx.createOscillator(),gain=ctx.createGain();
-    osc.type='sawtooth';
-    osc.frequency.setValueAtTime(160,t);
-    osc.frequency.exponentialRampToValueAtTime(100,t+0.12);
-    gain.gain.setValueAtTime(0,t);
-    gain.gain.linearRampToValueAtTime(0.40,t+0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001,t+0.13);
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.start(t);osc.stop(t+0.14);
-  });
-}
-
-// ── TTS ───────────────────────────────────────────────────────────────────────
-let _voices=[];
-function loadVoices(){ _voices=window.speechSynthesis?.getVoices()||[]; }
-window.speechSynthesis?.addEventListener('voiceschanged',loadVoices);
-setTimeout(loadVoices,300);
-
-function frenchVoice(){
-  const fr=_voices.filter(v=>v.lang.startsWith('fr'));
-  return fr.find(v=>/thomas|nicolas|pierre|male/i.test(v.name))
-      ||fr.find(v=>!/amelie|aurelie|female|femme/i.test(v.name))
-      ||fr[0]||null;
-}
-function speak(text,onEnd){
-  if(!window.speechSynthesis){onEnd?.();return;}
-  window.speechSynthesis.cancel();
-  const utt=new SpeechSynthesisUtterance(text);
-  utt.lang='fr-FR';utt.rate=1.05;utt.pitch=1.0;
-  const v=frenchVoice();if(v)utt.voice=v;
-  utt.onend=()=>onEnd?.();
-  utt.onerror=()=>onEnd?.();
-  window.speechSynthesis.speak(utt);
-}
-
-function numFr(n){
-  const w=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix',
-           'onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf','vingt'];
-  return(n>=0&&n<w.length)?w[n]:String(n);
-}
-function deltaFr(delta){
-  const abs=Math.abs(delta),word=abs<=20?numFr(abs):String(abs);
-  if(delta===1)return'un point';
-  if(delta>0)return`${word} points`;
-  return`moins ${word}`;
-}
-function totalFr(score){
-  const abs=Math.abs(score),word=abs<=20?numFr(abs):String(abs);
-  return score<0?`moins ${word}`:word;
-}
-function playTapAudio(player,delta,newScore){
-  const positive=delta>0,steps=[];
-  if(player.sndPing!==false)steps.push('ping');
-  if(player.sndNum!==false)steps.push('num');
-  if(player.sndName!==false)steps.push('name');
-  if(player.sndTotal!==false)steps.push('total');
-  if(!steps.length)return;
-  let i=0;
-  function next(){
-    if(i>=steps.length)return;
-    const step=steps[i++];
-    if(step==='ping'){if(positive){playPositivePing();setTimeout(next,560);}else{playNegativeBuzz();setTimeout(next,420);}}
-    else if(step==='num')speak(deltaFr(delta),next);
-    else if(step==='name')speak(player.name,next);
-    else if(step==='total')speak(totalFr(newScore),next);
-  }
-  next();
-}
+// ── Unique ID ─────────────────────────────────────────────────────────────────
+function genId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
 // ── Pool balls ────────────────────────────────────────────────────────────────
 const BALLS=[
@@ -237,6 +97,7 @@ const BALLS=[
   {num:12,c:"#5B1472",s:true},{num:13,c:"#D45500",s:true},{num:14,c:"#1A6B28",s:true},
   {num:15,c:"#7A1C22",s:true},
 ];
+const FELTS=["#1B5E20","#0D3B6E","#7B1113","#7B3A00","#00514A","#3E2723"];
 
 // ── Color helpers ─────────────────────────────────────────────────────────────
 function h2r(hex){return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
@@ -248,78 +109,77 @@ function mute(hex){const[r,g,b]=h2r(hex);return r2h(r*.28+10,g*.28+10,b*.28+10);
 function h2v(hex){let[r,g,b]=h2r(hex);r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;let h=0,s=mx?d/mx:0,v=mx;if(d){if(mx===r)h=((g-b)/d+6)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;}return[h,s,v];}
 function v2h(h,s,v){const i=Math.floor(h/60)%6,f=h/60-Math.floor(h/60),p=v*(1-s),q=v*(1-f*s),t=v*(1-(1-f)*s);const[r,g,b]=[[v,t,p],[q,v,p],[p,v,t],[p,q,v],[t,p,v],[v,p,q]][i];return r2h(r*255,g*255,b*255);}
 
-// ── State factory ─────────────────────────────────────────────────────────────
-const FELTS=["#1B5E20","#0D3B6E","#7B1113","#7B3A00","#00514A","#3E2723"];
-let _uid=100;
-function mkPlayer(i){const b=BALLS[i%BALLS.length];return{id:_uid++,name:`Joueur ${i+1}`,bc:b.c,fc:FELTS[i%FELTS.length],stripe:b.s,bn:b.num,photo:null,score:0,teamId:null,sndPing:true,sndNum:true,sndName:true,sndTotal:true};}
-function mkState(goal=0){return{players:[mkPlayer(0),mkPlayer(1)],history:[],done:false,v:0,goal};}
+// ── Default profile factory ───────────────────────────────────────────────────
+function mkProfile(idx=0){
+  const b=BALLS[idx%BALLS.length];
+  return{id:genId(),name:`Joueur ${idx+1}`,bc:b.c,fc:FELTS[idx%FELTS.length],stripe:b.s,bn:b.num,photo:null,sndPing:true,sndNum:true,sndName:true,sndTotal:true,gamesPlayed:0,totalScore:0};
+}
+function mkGameState(players,goal){
+  return{players:players.map(p=>({...p,score:0})),history:[],v:0,goal,startedAt:Date.now()};
+}
+
+// ── Audio ─────────────────────────────────────────────────────────────────────
+let _actx=null;
+function getCtx(){if(!_actx)try{_actx=new(window.AudioContext||window.webkitAudioContext)();}catch(_){}if(_actx?.state==='suspended')_actx.resume();return _actx;}
+function playPositivePing(){const ctx=getCtx();if(!ctx)return;const t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(660,t);o.frequency.exponentialRampToValueAtTime(1320,t+.06);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.45,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+.55);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+.55);}
+function playNegativeBuzz(){const ctx=getCtx();if(!ctx)return;[0,.20].forEach(off=>{const t=ctx.currentTime+off,o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(100,t+.12);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.40,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+.13);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+.14);});}
+let _voices=[];
+function loadVoices(){_voices=window.speechSynthesis?.getVoices()||[];}
+window.speechSynthesis?.addEventListener('voiceschanged',loadVoices);setTimeout(loadVoices,300);
+function frenchVoice(){const fr=_voices.filter(v=>v.lang.startsWith('fr'));return fr.find(v=>/thomas|nicolas|pierre|male/i.test(v.name))||fr.find(v=>!/amelie|aurelie|female|femme/i.test(v.name))||fr[0]||null;}
+function speak(text,onEnd){if(!window.speechSynthesis){onEnd?.();return;}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1.05;u.pitch=1.0;const v=frenchVoice();if(v)u.voice=v;u.onend=()=>onEnd?.();u.onerror=()=>onEnd?.();window.speechSynthesis.speak(u);}
+function numFr(n){const w=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf','vingt'];return(n>=0&&n<w.length)?w[n]:String(n);}
+function deltaFr(d){const a=Math.abs(d),w=a<=20?numFr(a):String(a);if(d===1)return'un point';if(d>0)return`${w} points`;return`moins ${w}`;}
+function totalFr(s){const a=Math.abs(s),w=a<=20?numFr(a):String(a);return s<0?`moins ${w}`:w;}
+function playTapAudio(player,delta,newScore){
+  const pos=delta>0,steps=[];
+  if(player.sndPing!==false)steps.push('ping');
+  if(player.sndNum!==false)steps.push('num');
+  if(player.sndName!==false)steps.push('name');
+  if(player.sndTotal!==false)steps.push('total');
+  if(!steps.length)return;
+  let i=0;
+  function next(){if(i>=steps.length)return;const s=steps[i++];if(s==='ping'){if(pos){playPositivePing();setTimeout(next,560);}else{playNegativeBuzz();setTimeout(next,420);}}else if(s==='num')speak(deltaFr(delta),next);else if(s==='name')speak(player.name,next);else if(s==='total')speak(totalFr(newScore),next);}
+  next();
+}
+const SFX=["https://www.soundjay.com/misc/sounds/fanfare-1.mp3","https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3","https://www.soundjay.com/human/sounds/applause-8.mp3"];
+function playWin(){try{const a=new Audio(SFX[Math.floor(Math.random()*SFX.length)]);a.volume=.7;a.play().catch(()=>{});}catch(_){}}
 
 // ── Ball SVG ──────────────────────────────────────────────────────────────────
 function Ball({c,stripe,num,photo,size=56,rolling=false}){
-  const r=size/2;
-  const uid=`b${(c||"0").replace(/\W/g,"")}-${num}-${size}-${rolling?1:0}`;
+  const r=size/2,uid=`b${(c||"0").replace(/\W/g,"")}-${num}-${size}-${rolling?1:0}`;
   const mr=r*.36,fs=num>=10?(size<32?size*.24:size*.27):(size<32?size*.30:size*.33);
   const bY1=r*.28,bY2=r*1.72,ry=r*.19,sz=size;
   const sp=[`M 0 ${bY1}`,`A ${r} ${ry} 0 0 1 ${sz} ${bY1}`,`L ${sz} ${bY2}`,`A ${r} ${ry} 0 0 0 0 ${bY2}`,`Z`].join(" ");
-  const wobId=`wob-${uid}`;
-  const TILT=40;
-
+  const wobId=`wob-${uid}`,TILT=40;
   if(photo) return(
-    <div style={{width:size,height:size,borderRadius:"50%",overflow:"hidden",flexShrink:0,
-      outline:`${Math.max(2,size*.05)}px solid ${c}`,outlineOffset:`${-Math.max(2,size*.05)}px`,background:"#111"}}>
+    <div style={{width:size,height:size,borderRadius:"50%",overflow:"hidden",flexShrink:0,outline:`${Math.max(2,size*.05)}px solid ${c}`,outlineOffset:`${-Math.max(2,size*.05)}px`,background:"#111"}}>
       <img src={photo} alt="" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
     </div>
   );
-
   return(
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{display:"block",flexShrink:0}}>
-      {rolling&&(
-        <style>{`@keyframes ${wobId}{0%,100%{transform:translateY(0)}25%{transform:translateY(-${size*.04}px) translateX(${size*.04}px)}75%{transform:translateY(${size*.02}px) translateX(-${size*.02}px)}}`}</style>
-      )}
+      {rolling&&<style>{`@keyframes ${wobId}{0%,100%{transform:translateY(0)}25%{transform:translateY(-${size*.04}px) translateX(${size*.04}px)}75%{transform:translateY(${size*.02}px) translateX(-${size*.02}px)}}`}</style>}
       <defs>
         <clipPath id={`${uid}-cl`}><circle cx={r} cy={r} r={r-.5}/></clipPath>
-        <radialGradient id={`${uid}-sp`} cx="34%" cy="28%" r="42%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="rgba(255,255,255,.70)"/>
-          <stop offset="30%" stopColor="rgba(255,255,255,.14)"/>
-          <stop offset="100%" stopColor="rgba(0,0,0,0)"/>
-        </radialGradient>
-        <radialGradient id={`${uid}-ao`} cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox">
-          <stop offset="76%" stopColor="rgba(0,0,0,0)"/>
-          <stop offset="100%" stopColor="rgba(0,0,0,.42)"/>
-        </radialGradient>
-        <radialGradient id={`${uid}-sh`} cx="50%" cy="90%" r="55%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="rgba(0,0,0,.28)"/>
-          <stop offset="100%" stopColor="rgba(0,0,0,0)"/>
-        </radialGradient>
+        <radialGradient id={`${uid}-sp`} cx="34%" cy="28%" r="42%" gradientUnits="objectBoundingBox"><stop offset="0%" stopColor="rgba(255,255,255,.70)"/><stop offset="30%" stopColor="rgba(255,255,255,.14)"/><stop offset="100%" stopColor="rgba(0,0,0,0)"/></radialGradient>
+        <radialGradient id={`${uid}-ao`} cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox"><stop offset="76%" stopColor="rgba(0,0,0,0)"/><stop offset="100%" stopColor="rgba(0,0,0,.42)"/></radialGradient>
+        <radialGradient id={`${uid}-sh`} cx="50%" cy="90%" r="55%" gradientUnits="objectBoundingBox"><stop offset="0%" stopColor="rgba(0,0,0,.28)"/><stop offset="100%" stopColor="rgba(0,0,0,0)"/></radialGradient>
       </defs>
       <g style={rolling?{animation:`${wobId} 2.2s ease-in-out infinite`}:{}}>
         <g clipPath={`url(#${uid}-cl)`}>
           <rect x={0} y={0} width={size} height={size} fill={stripe?"#F5F0E8":c}/>
           {rolling?(
-            <g transform={`rotate(${TILT} ${r} ${r})`}>
-              <g>
-                <animateTransform attributeName="transform" type="rotate"
-                  from={`0 ${r} ${r}`} to={`360 ${r} ${r}`}
-                  dur="3s" repeatCount="indefinite" calcMode="linear"/>
-                <g transform={`rotate(${-TILT} ${r} ${r})`}>
-                  {stripe&&<path d={sp} fill={c}/>}
-                  <circle cx={r} cy={r} r={mr} fill="#F8F5EE"/>
-                  <text x={r} y={r} textAnchor="middle" dominantBaseline="central"
-                    fontSize={fs} fontWeight="700" fill="#1a0808"
-                    fontFamily="Georgia,'Times New Roman',serif"
-                    letterSpacing={num>=10?"-0.5":"0"}>{num}</text>
-                </g>
+            <g transform={`rotate(${TILT} ${r} ${r})`}><g>
+              <animateTransform attributeName="transform" type="rotate" from={`0 ${r} ${r}`} to={`360 ${r} ${r}`} dur="3s" repeatCount="indefinite" calcMode="linear"/>
+              <g transform={`rotate(${-TILT} ${r} ${r})`}>
+                {stripe&&<path d={sp} fill={c}/>}
+                <circle cx={r} cy={r} r={mr} fill="#F8F5EE"/>
+                <text x={r} y={r} textAnchor="middle" dominantBaseline="central" fontSize={fs} fontWeight="700" fill="#1a0808" fontFamily="Georgia,serif" letterSpacing={num>=10?"-0.5":"0"}>{num}</text>
               </g>
-            </g>
+            </g></g>
           ):(
-            <>
-              {stripe&&<path d={sp} fill={c}/>}
-              <circle cx={r} cy={r} r={mr} fill="#F8F5EE"/>
-              <text x={r} y={r} textAnchor="middle" dominantBaseline="central"
-                fontSize={fs} fontWeight="700" fill="#1a0808"
-                fontFamily="Georgia,'Times New Roman',serif"
-                letterSpacing={num>=10?"-0.5":"0"}>{num}</text>
-            </>
+            <>{stripe&&<path d={sp} fill={c}/>}<circle cx={r} cy={r} r={mr} fill="#F8F5EE"/><text x={r} y={r} textAnchor="middle" dominantBaseline="central" fontSize={fs} fontWeight="700" fill="#1a0808" fontFamily="Georgia,serif" letterSpacing={num>=10?"-0.5":"0"}>{num}</text></>
           )}
           <rect x={0} y={0} width={size} height={size} fill={`url(#${uid}-sh)`}/>
           <rect x={0} y={0} width={size} height={size} fill={`url(#${uid}-ao)`}/>
@@ -349,16 +209,8 @@ function Wheel({color,onChange}){
   const[hsv,setHsv]=useState(()=>h2v(color||"#1B5E20"));
   const dw=useRef(false),ds=useRef(false);
   const SZ=192,CX=96,CY=96,OR=94,IR=66,SQ=IR*1.36;
-  useEffect(()=>{
-    const c=cr.current;if(!c)return;const ctx=c.getContext("2d");ctx.clearRect(0,0,SZ,SZ);
-    for(let d=0;d<360;d++){const a0=(d-1)*Math.PI/180,a1=(d+1)*Math.PI/180;ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,OR,a0,a1);ctx.closePath();ctx.fillStyle=v2h(d,1,1);ctx.fill();}
-    ctx.globalCompositeOperation="destination-out";ctx.beginPath();ctx.arc(CX,CY,IR,0,Math.PI*2);ctx.fill();ctx.globalCompositeOperation="source-over";
-  },[]);
-  useEffect(()=>{
-    const c=sr.current;if(!c)return;const ctx=c.getContext("2d"),N=SQ;
-    const gH=ctx.createLinearGradient(0,0,N,0);gH.addColorStop(0,"#fff");gH.addColorStop(1,v2h(hsv[0],1,1));ctx.fillStyle=gH;ctx.fillRect(0,0,N,N);
-    const gV=ctx.createLinearGradient(0,0,0,N);gV.addColorStop(0,"rgba(0,0,0,0)");gV.addColorStop(1,"rgba(0,0,0,1)");ctx.fillStyle=gV;ctx.fillRect(0,0,N,N);
-  },[hsv[0]]);
+  useEffect(()=>{const c=cr.current;if(!c)return;const ctx=c.getContext("2d");ctx.clearRect(0,0,SZ,SZ);for(let d=0;d<360;d++){const a0=(d-1)*Math.PI/180,a1=(d+1)*Math.PI/180;ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,OR,a0,a1);ctx.closePath();ctx.fillStyle=v2h(d,1,1);ctx.fill();}ctx.globalCompositeOperation="destination-out";ctx.beginPath();ctx.arc(CX,CY,IR,0,Math.PI*2);ctx.fill();ctx.globalCompositeOperation="source-over";},[]);
+  useEffect(()=>{const c=sr.current;if(!c)return;const ctx=c.getContext("2d"),N=SQ;const gH=ctx.createLinearGradient(0,0,N,0);gH.addColorStop(0,"#fff");gH.addColorStop(1,v2h(hsv[0],1,1));ctx.fillStyle=gH;ctx.fillRect(0,0,N,N);const gV=ctx.createLinearGradient(0,0,0,N);gV.addColorStop(0,"rgba(0,0,0,0)");gV.addColorStop(1,"rgba(0,0,0,1)");ctx.fillStyle=gV;ctx.fillRect(0,0,N,N);},[hsv[0]]);
   const set=(h)=>{setHsv(h);onChange(v2h(...h));};
   const hue=(e)=>{const rect=cr.current.getBoundingClientRect(),cx=(e.clientX??e.touches?.[0]?.clientX)-rect.left-CX,cy=(e.clientY??e.touches?.[0]?.clientY)-rect.top-CY;let a=Math.atan2(cy,cx)*180/Math.PI;return a<0?a+360:a;};
   const sv=(e)=>{const rect=sr.current.getBoundingClientRect(),x=Math.max(0,Math.min(SQ,(e.clientX??e.touches?.[0]?.clientX)-rect.left)),y=Math.max(0,Math.min(SQ,(e.clientY??e.touches?.[0]?.clientY)-rect.top));return[x/SQ,1-y/SQ];};
@@ -366,27 +218,22 @@ function Wheel({color,onChange}){
   const hrad=hsv[0]*Math.PI/180,hm=(OR+IR)/2,hx=CX+hm*Math.cos(hrad),hy=CY+hm*Math.sin(hrad);
   const sx2=hsv[1]*SQ,sy2=(1-hsv[2])*SQ;
   return(
-    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,userSelect:"none",WebkitUserSelect:"none"}}>
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10,userSelect:"none"}}>
       <div style={{position:"relative",width:SZ,height:SZ,touchAction:"none"}}
-        onMouseDown={e=>{e.preventDefault();dw.current=true;set([hue(e),hsv[1],hsv[2]]);}}
-        onMouseMove={e=>{if(!dw.current)return;e.preventDefault();set([hue(e),hsv[1],hsv[2]]);}}
-        onTouchStart={e=>{e.preventDefault();dw.current=true;set([hue(e),hsv[1],hsv[2]]);}}
-        onTouchMove={e=>{if(!dw.current)return;e.preventDefault();set([hue(e),hsv[1],hsv[2]]);}}>
+        onMouseDown={e=>{e.preventDefault();dw.current=true;set([hue(e),hsv[1],hsv[2]]);}} onMouseMove={e=>{if(!dw.current)return;e.preventDefault();set([hue(e),hsv[1],hsv[2]]);}}
+        onTouchStart={e=>{e.preventDefault();dw.current=true;set([hue(e),hsv[1],hsv[2]]);}} onTouchMove={e=>{if(!dw.current)return;e.preventDefault();set([hue(e),hsv[1],hsv[2]]);}}>
         <canvas ref={cr} width={SZ} height={SZ} style={{position:"absolute",top:0,left:0}}/>
         <div style={{position:"absolute",left:hx-8,top:hy-8,width:16,height:16,borderRadius:"50%",border:"2.5px solid #fff",background:v2h(hsv[0],1,1),pointerEvents:"none"}}/>
         <div style={{position:"absolute",left:CX-SQ/2,top:CY-SQ/2,width:SQ,height:SQ,borderRadius:5,overflow:"hidden",touchAction:"none"}}
-          onMouseDown={e=>{e.stopPropagation();e.preventDefault();ds.current=true;const[s,v]=sv(e);set([hsv[0],s,v]);}}
-          onMouseMove={e=>{if(!ds.current)return;e.stopPropagation();e.preventDefault();const[s,v]=sv(e);set([hsv[0],s,v]);}}
-          onTouchStart={e=>{e.stopPropagation();e.preventDefault();ds.current=true;const[s,v]=sv(e);set([hsv[0],s,v]);}}
-          onTouchMove={e=>{if(!ds.current)return;e.stopPropagation();e.preventDefault();const[s,v]=sv(e);set([hsv[0],s,v]);}}>
+          onMouseDown={e=>{e.stopPropagation();e.preventDefault();ds.current=true;const[s,v]=sv(e);set([hsv[0],s,v]);}} onMouseMove={e=>{if(!ds.current)return;e.stopPropagation();e.preventDefault();const[s,v]=sv(e);set([hsv[0],s,v]);}}
+          onTouchStart={e=>{e.stopPropagation();e.preventDefault();ds.current=true;const[s,v]=sv(e);set([hsv[0],s,v]);}} onTouchMove={e=>{if(!ds.current)return;e.stopPropagation();e.preventDefault();const[s,v]=sv(e);set([hsv[0],s,v]);}}>
           <canvas ref={sr} width={SQ} height={SQ} style={{display:"block"}}/>
           <div style={{position:"absolute",left:sx2-6,top:sy2-6,width:12,height:12,borderRadius:"50%",border:"2px solid #fff",background:v2h(...hsv),pointerEvents:"none"}}/>
         </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:8}}>
         <div style={{width:28,height:28,borderRadius:7,background:v2h(...hsv),border:"2px solid #ffffff22"}}/>
-        <input value={v2h(...hsv)} onChange={e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))set(h2v(e.target.value));}}
-          style={{background:"#1a1a1a",border:"1px solid #333",borderRadius:7,color:"#ccc",fontSize:13,padding:"5px 8px",fontFamily:"monospace",width:78,outline:"none"}}/>
+        <input value={v2h(...hsv)} onChange={e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))set(h2v(e.target.value));}} style={{background:"#1a1a1a",border:"1px solid #333",borderRadius:7,color:"#ccc",fontSize:13,padding:"5px 8px",fontFamily:"monospace",width:78,outline:"none"}}/>
       </div>
     </div>
   );
@@ -395,7 +242,7 @@ function WheelModal({title,color,onDone,onCancel}){
   const[cur,setCur]=useState(color);
   return(
     <div style={{position:"fixed",inset:0,background:"#000c",zIndex:600,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F}}>
-      <div style={{background:"#161616",borderRadius:20,padding:20,display:"flex",flexDirection:"column",alignItems:"center",gap:14,maxWidth:256,width:"90%"}}>
+      <div style={{background:"#161616",borderRadius:20,padding:20,display:"flex",flexDirection:"column",alignItems:"center",gap:14,maxWidth:260,width:"90%"}}>
         <div style={{color:"#FFD700",fontSize:13,fontWeight:700,letterSpacing:2}}>{title}</div>
         <Wheel color={cur} onChange={setCur}/>
         <div style={{display:"flex",gap:8,width:"100%"}}>
@@ -410,44 +257,33 @@ function WheelModal({title,color,onDone,onCancel}){
 // ── Photo Crop ────────────────────────────────────────────────────────────────
 function CropModal({onDone,onCancel}){
   const SZ=230;
-  const[src,setSrc]=useState(null),[nat,setNat]=useState({w:1,h:1});
+  const[src,setSrc]=useState(null);
   const xr=useRef({x:0,y:0,scale:1}),[xf,setXf]=useState({x:0,y:0,scale:1});
   const cvr=useRef(null),imgr=useRef(null),contr=useRef(null);
   const drg=useRef(false),lm=useRef(null),lpd=useRef(null),lpm=useRef(null);
   const ax=(n)=>{n.scale=Math.max(1,Math.min(8,n.scale));xr.current=n;setXf({...n});};
   const onLoad=()=>ax({x:0,y:0,scale:1});
   const onFile=(e)=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=ev=>{setSrc(ev.target.result);ax({x:0,y:0,scale:1});};rd.readAsDataURL(f);};
-  const mdown=(e)=>{e.preventDefault();drg.current=true;lm.current={x:e.clientX,y:e.clientY};if(contr.current)contr.current.style.cursor="grabbing";};
+  const mdown=(e)=>{e.preventDefault();drg.current=true;lm.current={x:e.clientX,y:e.clientY};};
   const mmove=(e)=>{if(!drg.current)return;e.preventDefault();const dx=e.clientX-lm.current.x,dy=e.clientY-lm.current.y;lm.current={x:e.clientX,y:e.clientY};ax({...xr.current,x:xr.current.x+dx,y:xr.current.y+dy});};
-  const mup=()=>{drg.current=false;if(contr.current)contr.current.style.cursor="grab";};
-  const wheel=(e)=>{e.preventDefault();ax({...xr.current,scale:xr.current.scale*(e.deltaY<0?1.1:.92)});};
+  const mup=()=>{drg.current=false;};
+  const whl=(e)=>{e.preventDefault();ax({...xr.current,scale:xr.current.scale*(e.deltaY<0?1.1:.92)});};
   const md2=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),mp2=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
   const ta=(e)=>Array.from(e.touches).map(t=>({x:t.clientX,y:t.clientY}));
   const tdown=(e)=>{e.preventDefault();const ts=ta(e);if(ts.length===1){drg.current=true;lm.current=ts[0];lpd.current=null;}else if(ts.length===2){drg.current=false;lpd.current=md2(ts[0],ts[1]);lpm.current=mp2(ts[0],ts[1]);}};
   const tmove=(e)=>{e.preventDefault();const ts=ta(e);if(ts.length===1&&drg.current){const dx=ts[0].x-lm.current.x,dy=ts[0].y-lm.current.y;lm.current=ts[0];ax({...xr.current,x:xr.current.x+dx,y:xr.current.y+dy});}else if(ts.length===2){const d=md2(ts[0],ts[1]),m=mp2(ts[0],ts[1]);if(lpd.current){const f=d/lpd.current;ax({x:xr.current.x+(m.x-lpm.current.x),y:xr.current.y+(m.y-lpm.current.y),scale:xr.current.scale*f});}lpd.current=d;lpm.current=m;}};
   const tend=(e)=>{if(!e.touches.length){drg.current=false;lpd.current=null;}else if(e.touches.length===1){lpd.current=null;drg.current=true;lm.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}};
   useEffect(()=>{window.addEventListener("mouseup",mup);return()=>window.removeEventListener("mouseup",mup);},[]);
-  const crop=()=>{
-    const cv=cvr.current,ctx=cv.getContext("2d"),img=imgr.current;
-    cv.width=SZ;cv.height=SZ;ctx.clearRect(0,0,SZ,SZ);
-    const{x,y,scale}=xr.current;
-    ctx.save();ctx.translate(SZ/2+x,SZ/2+y);ctx.scale(scale,scale);ctx.drawImage(img,-SZ/2,-SZ/2,SZ,SZ);ctx.restore();
-    onDone(cv.toDataURL("image/jpeg",.88));
-  };
+  const crop=()=>{const cv=cvr.current,ctx=cv.getContext("2d"),img=imgr.current;cv.width=SZ;cv.height=SZ;ctx.clearRect(0,0,SZ,SZ);const{x,y,scale}=xr.current;ctx.save();ctx.translate(SZ/2+x,SZ/2+y);ctx.scale(scale,scale);ctx.drawImage(img,-SZ/2,-SZ/2,SZ,SZ);ctx.restore();onDone(cv.toDataURL("image/jpeg",.88));};
   return(
     <div style={{position:"fixed",inset:0,background:"#000d",zIndex:700,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:14,fontFamily:F}}>
       <div style={{color:"#FFD700",fontSize:15,fontWeight:700,letterSpacing:2}}>RECADRER</div>
       {!src
-        ?<label style={{background:"#1a1a1a",border:"2px dashed #333",borderRadius:16,padding:"30px 40px",color:"#666",cursor:"pointer",fontSize:14,textAlign:"center",lineHeight:1.8}}>
-            📷<br/>Choisir une photo<input type="file" accept="image/*" onChange={onFile} style={{display:"none"}}/>
-          </label>
+        ?<label style={{background:"#1a1a1a",border:"2px dashed #333",borderRadius:16,padding:"30px 40px",color:"#666",cursor:"pointer",fontSize:14,textAlign:"center",lineHeight:1.8}}>📷<br/>Choisir une photo<input type="file" accept="image/*" onChange={onFile} style={{display:"none"}}/></label>
         :<>
-          <div ref={contr} onMouseDown={mdown} onMouseMove={mmove} onTouchStart={tdown} onTouchMove={tmove} onTouchEnd={tend} onWheel={wheel}
+          <div ref={contr} onMouseDown={mdown} onMouseMove={mmove} onTouchStart={tdown} onTouchMove={tmove} onTouchEnd={tend} onWheel={whl}
             style={{position:"relative",width:SZ,height:SZ,borderRadius:"50%",overflow:"hidden",background:"#222",cursor:"grab",touchAction:"none",outline:"3px solid #FFD700",flexShrink:0}}>
-            <img ref={imgr} src={src} alt="" onLoad={onLoad} draggable={false}
-              style={{position:"absolute",width:"100%",height:"100%",objectFit:"cover",left:0,top:0,
-                transform:`translate(${xf.x}px,${xf.y}px) scale(${xf.scale})`,
-                transformOrigin:"center center",pointerEvents:"none",userSelect:"none"}}/>
+            <img ref={imgr} src={src} alt="" onLoad={onLoad} draggable={false} style={{position:"absolute",width:"100%",height:"100%",objectFit:"cover",left:0,top:0,transform:`translate(${xf.x}px,${xf.y}px) scale(${xf.scale})`,transformOrigin:"center center",pointerEvents:"none"}}/>
           </div>
           <div style={{color:"#555",fontSize:11}}>Glisser · Pincer pour zoomer</div>
         </>
@@ -461,7 +297,171 @@ function CropModal({onDone,onCancel}){
   );
 }
 
-// ── Score Correction Modal ────────────────────────────────────────────────────
+// ── Toggle ────────────────────────────────────────────────────────────────────
+function Toggle({on,onChange,label}){
+  return(
+    <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onClick={()=>onChange(!on)}>
+      <span style={{color:"#888",fontSize:11,fontWeight:600,fontFamily:F,letterSpacing:.5,minWidth:44,textAlign:"right"}}>{label}</span>
+      <div style={{width:38,height:22,borderRadius:11,background:on?"#FFD700":"#333",position:"relative",transition:"background .2s",flexShrink:0}}>
+        <div style={{position:"absolute",top:3,left:on?18:3,width:16,height:16,borderRadius:"50%",background:on?"#111":"#666",transition:"left .2s"}}/>
+      </div>
+    </div>
+  );
+}
+
+// ── Profile Editor ────────────────────────────────────────────────────────────
+function ProfileEditor({profile,allProfiles,onSave,onCancel,onDelete,isNew=false}){
+  const[p,setP]=useState({...profile});
+  const[showCrop,setShowCrop]=useState(false);
+  const[showFelt,setShowFelt]=useState(false);
+  const[showBalls,setShowBalls]=useState(false);
+  const up=(f,v)=>setP(prev=>({...prev,[f]:v}));
+  const bg=mute(p.fc||"#1B5E20"),txt=fg(bg);
+  const inputBorder=txt==="#fff"?"rgba(255,255,255,.35)":"rgba(0,0,0,.3)";
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F,padding:12,overflowY:"auto"}}>
+      {showCrop&&<CropModal onDone={ph=>{up("photo",ph);setShowCrop(false);}} onCancel={()=>setShowCrop(false)}/>}
+      {showFelt&&<WheelModal title="COULEUR TAPIS" color={p.fc} onDone={c=>{up("fc",c);setShowFelt(false);}} onCancel={()=>setShowFelt(false)}/>}
+      <div style={{background:bg,borderRadius:22,padding:"20px 18px",display:"flex",flexDirection:"column",gap:14,width:"100%",maxWidth:360}}>
+        <div style={{color:txt,fontSize:13,fontWeight:700,letterSpacing:2,opacity:.6,textAlign:"center"}}>{isNew?"NOUVEAU JOUEUR":"MODIFIER JOUEUR"}</div>
+
+        {/* Ball + name */}
+        <div style={{display:"flex",alignItems:"center",gap:14}}>
+          <div style={{position:"relative",cursor:"pointer",flexShrink:0}} onClick={()=>p.photo?setShowCrop(true):setShowBalls(v=>!v)}>
+            <Ball c={p.bc} stripe={p.stripe} num={p.bn||1} photo={p.photo} size={56}/>
+            <div style={{position:"absolute",bottom:-2,right:-2,background:"#FFD700",borderRadius:"50%",width:16,height:16,fontSize:9,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.photo?"📷":"🎱"}</div>
+          </div>
+          <div style={{flex:1,display:"flex",flexDirection:"column",gap:6}}>
+            <input value={p.name} maxLength={14} onChange={e=>up("name",e.target.value)}
+              style={{width:"100%",background:"transparent",border:"none",borderBottom:`2px solid ${inputBorder}`,color:txt,fontSize:20,fontWeight:700,fontFamily:F,outline:"none",padding:"2px 0"}}/>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              <button onClick={()=>setShowCrop(true)} style={{background:"rgba(255,255,255,.1)",border:"none",borderRadius:6,color:txt,padding:"3px 8px",fontSize:10,cursor:"pointer",fontFamily:F}}>📷 Photo</button>
+              {p.photo&&<button onClick={()=>up("photo",null)} style={{background:"rgba(255,255,255,.1)",border:"none",borderRadius:6,color:txt,opacity:.6,padding:"3px 8px",fontSize:10,cursor:"pointer",fontFamily:F}}>✕</button>}
+            </div>
+          </div>
+        </div>
+
+        {/* Ball picker */}
+        {showBalls&&(
+          <div style={{display:"flex",flexWrap:"wrap",gap:6,padding:"8px",background:"rgba(0,0,0,.18)",borderRadius:10}}>
+            {BALLS.map(b=>(
+              <div key={b.num} onClick={()=>{up("bc",b.c);up("stripe",b.s);up("bn",b.num);setShowBalls(false);}} style={{cursor:"pointer",transform:p.bn===b.num?"scale(1.18)":"scale(1)",transition:"transform .1s"}}>
+                <Ball c={b.c} stripe={b.s} num={b.num} size={34}/>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Felt */}
+        <div onClick={()=>setShowFelt(true)} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:7,background:"rgba(0,0,0,.18)",borderRadius:9,padding:"7px 12px",width:"fit-content"}}>
+          <div style={{width:26,height:15,borderRadius:4,background:p.fc}}/>
+          <span style={{color:txt,fontSize:11,fontWeight:600}}>Tapis ▸</span>
+        </div>
+
+        {/* Audio */}
+        <div style={{display:"flex",flexDirection:"column",gap:6,background:"rgba(0,0,0,.15)",borderRadius:10,padding:"10px 12px"}}>
+          <div style={{color:txt,opacity:.5,fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Son</div>
+          <Toggle on={p.sndPing!==false} onChange={v=>up("sndPing",v)} label="SON"/>
+          <Toggle on={p.sndNum!==false}  onChange={v=>up("sndNum",v)}  label="POINT"/>
+          <Toggle on={p.sndName!==false} onChange={v=>up("sndName",v)} label="NOM"/>
+          <Toggle on={p.sndTotal!==false}onChange={v=>up("sndTotal",v)}label="TOTAL"/>
+        </div>
+
+        {/* Actions */}
+        <div style={{display:"flex",gap:8}}>
+          <button onClick={onCancel} style={{flex:1,background:"rgba(255,255,255,.08)",color:txt,border:"none",borderRadius:10,padding:"10px 0",fontSize:13,cursor:"pointer",fontFamily:F,opacity:.7}}>Annuler</button>
+          {!isNew&&onDelete&&<button onClick={onDelete} style={{background:"rgba(200,50,50,.25)",color:"#ff8888",border:"none",borderRadius:10,padding:"10px 12px",fontSize:13,cursor:"pointer",fontFamily:F}}>🗑</button>}
+          <button onClick={()=>onSave(p)} style={{flex:1,background:"#FFD700",color:"#111",border:"none",borderRadius:10,padding:"10px 0",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:F}}>Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Game History Panel ────────────────────────────────────────────────────────
+function GameHistoryPanel({onClose}){
+  const[games,setGames]=useState([]);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{loadGameHistory().then(g=>{setGames(g);setLoading(false);});},[]);
+  return(
+    <div style={{position:"fixed",inset:0,background:"#0d0d0df8",zIndex:300,display:"flex",flexDirection:"column",fontFamily:F}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px 10px",borderBottom:"1px solid #222",flexShrink:0}}>
+        <div style={{color:"#FFD700",fontSize:15,fontWeight:700,letterSpacing:2}}>PARTIES JOUÉES</div>
+        <button onClick={onClose} style={{background:"#1e1e1e",border:"none",color:"#777",borderRadius:8,padding:"6px 16px",fontSize:14,cursor:"pointer",fontFamily:F}}>✕</button>
+      </div>
+      <div className="scroll" style={{flex:1}}>
+        {loading&&<div style={{color:"#555",textAlign:"center",marginTop:60,fontSize:14}}>Chargement...</div>}
+        {!loading&&games.length===0&&<div style={{color:"#333",textAlign:"center",marginTop:60,fontSize:14}}>Aucune partie enregistrée</div>}
+        {games.map((g,i)=>{
+          const date=new Date(g.startedAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+          const winner=g.players?.slice().sort((a,b)=>b.score-a.score)[0];
+          return(
+            <div key={i} style={{padding:"12px 16px",borderBottom:"1px solid #1a1a1a"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <div style={{color:"#555",fontSize:11}}>{date}</div>
+                {g.goal>0&&<div style={{color:"#FFD700",fontSize:11}}>Objectif: {g.goal}</div>}
+              </div>
+              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                {g.players?.map(p=>(
+                  <div key={p.id} style={{display:"flex",alignItems:"center",gap:6,background:p.fc+"22",borderRadius:8,padding:"4px 8px",border:winner?.id===p.id?"1px solid #FFD700":"1px solid transparent"}}>
+                    <Ball c={p.bc} stripe={p.stripe} num={p.bn||1} photo={p.photo} size={20}/>
+                    <span style={{color:"#ccc",fontSize:12}}>{p.name}</span>
+                    <span style={{color:winner?.id===p.id?"#FFD700":"#888",fontWeight:700,fontSize:14}}>{p.score}</span>
+                    {winner?.id===p.id&&<span style={{fontSize:12}}>🏆</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Score History Panel ───────────────────────────────────────────────────────
+function ScoreHistPanel({history,players,onClose}){
+  const cols=players.map(p=>({player:p,entries:history.filter(h=>h.pid===p.id)}));
+  const maxRows=Math.max(0,...cols.map(c=>c.entries.length));
+  return(
+    <div style={{position:"fixed",inset:0,background:"#0d0d0df8",zIndex:300,display:"flex",flexDirection:"column",fontFamily:F}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 16px 9px",borderBottom:"1px solid #222",flexShrink:0}}>
+        <div style={{color:"#FFD700",fontSize:15,fontWeight:700,letterSpacing:2}}>HISTORIQUE</div>
+        <button onClick={onClose} style={{background:"#1e1e1e",border:"none",color:"#777",borderRadius:8,padding:"6px 16px",fontSize:14,cursor:"pointer",fontFamily:F}}>✕</button>
+      </div>
+      <div style={{display:"flex",borderBottom:"1px solid #222",flexShrink:0}}>
+        {players.map(p=>(
+          <div key={p.id} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",padding:"7px 3px 6px",gap:3,borderRight:"1px solid #1a1a1a"}}>
+            <Ball c={p.bc} stripe={p.stripe} num={p.bn||1} photo={p.photo} size={24}/>
+            <div style={{color:p.fc,fontSize:9,fontWeight:700,textTransform:"uppercase",textAlign:"center",maxWidth:60,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>{p.name}</div>
+            <div style={{color:"#FFD700",fontSize:13,fontWeight:800}}>{p.score}</div>
+          </div>
+        ))}
+      </div>
+      <div className="scroll" style={{flex:1}}>
+        {maxRows===0&&<div style={{color:"#333",textAlign:"center",marginTop:60,fontSize:14}}>Aucun point marqué</div>}
+        {Array.from({length:maxRows}).map((_,rowIdx)=>(
+          <div key={rowIdx} style={{display:"flex",borderBottom:"1px solid #161616",minHeight:28}}>
+            {cols.map(({player:p,entries})=>{
+              const entry=entries[entries.length-1-rowIdx];
+              return(
+                <div key={p.id} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"3px 2px",borderRight:"1px solid #1a1a1a",background:entry?p.fc+"18":"transparent"}}>
+                  {entry&&(<>
+                    <span style={{color:entry.delta>0?"#06D6A0":"#E63946",fontSize:13,fontWeight:800}}>{entry.delta>0?`+${entry.delta}`:entry.delta}</span>
+                    <span style={{color:"#444",fontSize:9}}>→ {entry.sa}</span>
+                    {(entry.corr||[]).map((c,ci)=><span key={ci} style={{color:"#9B59B6",fontSize:9,fontWeight:700}}>[{c>0?"+":""}{c}]→{(entry.sac||[])[ci]}</span>)}
+                  </>)}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Correction Modal ──────────────────────────────────────────────────────────
 function CorrectModal({player,onApply,onCancel}){
   const[delta,setDelta]=useState(0);
   const bg=mute(player.fc||"#1B5E20"),txt=fg(bg);
@@ -486,70 +486,6 @@ function CorrectModal({player,onApply,onCancel}){
   );
 }
 
-// ── Player Edit Modal ─────────────────────────────────────────────────────────
-function EditModal({player,allPlayers,onSave,onCancel}){
-  const[p,setP]=useState({...player});
-  const[showCrop,setShowCrop]=useState(false);
-  const[showFelt,setShowFelt]=useState(false);
-  const[showBalls,setShowBalls]=useState(false);
-  const up=(f,v)=>setP(prev=>({...prev,[f]:v}));
-  const bg=mute(p.fc||"#1B5E20"),txt=fg(bg);
-  const inputBorder=txt==="#fff"?"rgba(255,255,255,.35)":"rgba(0,0,0,.3)";
-  const teammates=allPlayers.filter(x=>x.id!==p.id);
-  return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F,padding:12}}>
-      {showCrop&&<CropModal onDone={ph=>{up("photo",ph);setShowCrop(false);}} onCancel={()=>setShowCrop(false)}/>}
-      {showFelt&&<WheelModal title="COULEUR TAPIS" color={p.fc} onDone={c=>{up("fc",c);setShowFelt(false);}} onCancel={()=>setShowFelt(false)}/>}
-      <div style={{background:bg,borderRadius:22,padding:"20px 18px",display:"flex",flexDirection:"column",gap:14,width:"100%",maxWidth:360,maxHeight:"90dvh",overflowY:"auto"}}>
-        <div style={{color:txt,fontSize:13,fontWeight:700,letterSpacing:2,opacity:.6,textAlign:"center"}}>MODIFIER JOUEUR</div>
-        <div style={{display:"flex",alignItems:"center",gap:14}}>
-          <div style={{position:"relative",cursor:"pointer",flexShrink:0}} onClick={()=>p.photo?setShowCrop(true):setShowBalls(v=>!v)}>
-            <Ball c={p.bc} stripe={p.stripe} num={p.bn||1} photo={p.photo} size={56}/>
-            <div style={{position:"absolute",bottom:-2,right:-2,background:"#FFD700",borderRadius:"50%",width:16,height:16,fontSize:9,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.photo?"📷":"🎱"}</div>
-          </div>
-          <div style={{flex:1,display:"flex",flexDirection:"column",gap:6}}>
-            <input value={p.name} maxLength={14} onChange={e=>up("name",e.target.value)}
-              style={{width:"100%",background:"transparent",border:"none",borderBottom:`2px solid ${inputBorder}`,color:txt,fontSize:20,fontWeight:700,fontFamily:F,outline:"none",padding:"2px 0"}}/>
-            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              <button onClick={()=>setShowCrop(true)} style={{background:"rgba(255,255,255,.1)",border:"none",borderRadius:6,color:txt,padding:"3px 8px",fontSize:10,cursor:"pointer",fontFamily:F}}>📷 Photo</button>
-              {p.photo&&<button onClick={()=>up("photo",null)} style={{background:"rgba(255,255,255,.1)",border:"none",borderRadius:6,color:txt,opacity:.6,padding:"3px 8px",fontSize:10,cursor:"pointer",fontFamily:F}}>✕</button>}
-            </div>
-          </div>
-        </div>
-        {showBalls&&(
-          <div style={{display:"flex",flexWrap:"wrap",gap:6,padding:"8px",background:"rgba(0,0,0,.18)",borderRadius:10}}>
-            {BALLS.map(b=>(
-              <div key={b.num} onClick={()=>{up("bc",b.c);up("stripe",b.s);up("bn",b.num);setShowBalls(false);}}
-                style={{cursor:"pointer",transform:p.bn===b.num?"scale(1.18)":"scale(1)",transition:"transform .1s"}}>
-                <Ball c={b.c} stripe={b.s} num={b.num} size={34}/>
-              </div>
-            ))}
-          </div>
-        )}
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <div onClick={()=>setShowFelt(true)} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:7,background:"rgba(0,0,0,.18)",borderRadius:9,padding:"7px 12px"}}>
-            <div style={{width:26,height:15,borderRadius:4,background:p.fc}}/>
-            <span style={{color:txt,fontSize:11,fontWeight:600}}>Tapis ▸</span>
-          </div>
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-          <span style={{color:txt,opacity:.5,fontSize:10,textTransform:"uppercase",letterSpacing:.5}}>Équipe:</span>
-          <button onClick={()=>up("teamId",null)} style={{background:p.teamId===null?"rgba(255,215,0,.3)":"rgba(0,0,0,.18)",border:"none",borderRadius:7,color:p.teamId===null?"#FFD700":txt,padding:"3px 9px",fontSize:11,cursor:"pointer",fontFamily:F}}>Solo</button>
-          {teammates.map(t=>(
-            <button key={t.id} onClick={()=>up("teamId",t.id)} style={{background:p.teamId===t.id?"rgba(255,255,255,.2)":"rgba(0,0,0,.18)",border:"none",borderRadius:7,color:txt,padding:"3px 9px",fontSize:11,cursor:"pointer",fontFamily:F,display:"flex",alignItems:"center",gap:3}}>
-              <Ball c={t.bc} stripe={t.stripe} num={t.bn||1} size={13}/>{t.name}
-            </button>
-          ))}
-        </div>
-        <div style={{display:"flex",gap:10,marginTop:4}}>
-          <button onClick={onCancel} style={{flex:1,background:"rgba(255,255,255,.08)",color:txt,border:"none",borderRadius:10,padding:"10px 0",fontSize:14,cursor:"pointer",fontFamily:F,opacity:.7}}>Annuler</button>
-          <button onClick={()=>onSave(p)} style={{flex:1,background:"#FFD700",color:"#111",border:"none",borderRadius:10,padding:"10px 0",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:F}}>Enregistrer</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── Victory ───────────────────────────────────────────────────────────────────
 function Victory({player,goal,onDismiss}){
   useEffect(()=>{playWin();},[]);
@@ -558,7 +494,6 @@ function Victory({player,goal,onDismiss}){
   const pfg=fg(player.fc||"#1B5E20");
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:900,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:F,overflow:"hidden"}}>
-      <style>{`@keyframes cfall{0%{transform:translateY(-30px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}@keyframes vpop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.07)}100%{transform:scale(1);opacity:1}}@keyframes vpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}`}</style>
       {items.map(c=><div key={c.id} style={{position:"absolute",left:`${c.x}%`,top:0,width:c.sz,height:c.sz,background:c.color,borderRadius:c.id%3===0?"50%":"2px",animation:`cfall ${c.dur}s ${c.d}s ease-in infinite`,transform:`rotate(${c.sp}deg)`}}/>)}
       <div style={{background:player.fc||"#1B5E20",borderRadius:24,padding:"32px 40px",display:"flex",flexDirection:"column",alignItems:"center",gap:14,zIndex:1,animation:"vpop .5s ease-out forwards, vpulse 1.8s .5s ease-in-out infinite",maxWidth:300}}>
         <Ball c={player.bc} stripe={player.stripe} num={player.bn||1} photo={player.photo} size={76}/>
@@ -638,208 +573,178 @@ function Panel({player,onPlus,onMinus,onLong,onScoreTap,teamMate,ballSize,isLead
   );
 }
 
-// ── History Panel ─────────────────────────────────────────────────────────────
-function HistPanel({history,players,onClose}){
-  const cols=players.map(p=>({player:p,entries:history.filter(h=>h.pid===p.id)}));
-  const maxRows=Math.max(0,...cols.map(c=>c.entries.length));
-  return(
-    <div style={{position:"fixed",inset:0,background:"#0d0d0df8",zIndex:300,display:"flex",flexDirection:"column",fontFamily:F}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 16px 9px",borderBottom:"1px solid #222",flexShrink:0}}>
-        <div style={{color:"#FFD700",fontSize:15,fontWeight:700,letterSpacing:2}}>HISTORIQUE</div>
-        <button onClick={onClose} style={{background:"#1e1e1e",border:"none",color:"#777",borderRadius:8,padding:"6px 16px",fontSize:14,cursor:"pointer",fontFamily:F}}>✕</button>
-      </div>
-      <div style={{display:"flex",borderBottom:"1px solid #222",flexShrink:0}}>
-        {players.map(p=>(
-          <div key={p.id} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",padding:"7px 3px 6px",gap:3,borderRight:"1px solid #1a1a1a"}}>
-            <Ball c={p.bc} stripe={p.stripe} num={p.bn||1} photo={p.photo} size={24}/>
-            <div style={{color:p.fc,fontSize:9,fontWeight:700,textTransform:"uppercase",textAlign:"center",maxWidth:60,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>{p.name}</div>
-            <div style={{color:"#FFD700",fontSize:13,fontWeight:800}}>{p.score}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{flex:1,overflowY:"auto"}}>
-        {maxRows===0&&<div style={{color:"#333",textAlign:"center",marginTop:60,fontSize:14}}>Aucun point marqué</div>}
-        {Array.from({length:maxRows}).map((_,rowIdx)=>(
-          <div key={rowIdx} style={{display:"flex",borderBottom:"1px solid #161616",minHeight:28}}>
-            {cols.map(({player:p,entries})=>{
-              const entry=entries[entries.length-1-rowIdx];
-              return(
-                <div key={p.id} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"3px 2px",borderRight:"1px solid #1a1a1a",background:entry?p.fc+"18":"transparent"}}>
-                  {entry&&(
-                    <>
-                      <span style={{color:entry.delta>0?"#06D6A0":"#E63946",fontSize:13,fontWeight:800}}>{entry.delta>0?`+${entry.delta}`:entry.delta}</span>
-                      <span style={{color:"#444",fontSize:9}}>→ {entry.sa}</span>
-                      {(entry.corr||[]).map((c,ci)=><span key={ci} style={{color:"#9B59B6",fontSize:9,fontWeight:700}}>[{c>0?"+":""}{c}]→{(entry.sac||[])[ci]}</span>)}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// ── Selection Screen ──────────────────────────────────────────────────────────
+// Shows all Firebase profiles. Check to select for current game.
+// My profiles (created on this device) are highlighted.
+function SelectionScreen({onStart}){
+  const[profiles,setProfiles]=useState([]);
+  const[selected,setSelected]=useState(new Set()); // profile IDs checked for this game
+  const[goal,setGoal]=useState(0);
+  const[sndPing,setSndPing]=useState(true),[sndNum,setSndNum]=useState(true);
+  const[sndName,setSndName]=useState(true),[sndTotal,setSndTotal]=useState(true);
+  const[editingProfile,setEditingProfile]=useState(null); // profile being edited
+  const[creatingNew,setCreatingNew]=useState(false);
+  const[showGameHist,setShowGameHist]=useState(false);
+  const[loading,setLoading]=useState(true);
+  const myIds=getMyProfileIds();
 
-// ── Toggle Switch ─────────────────────────────────────────────────────────────
-function Toggle({on,onChange,label}){
-  return(
-    <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onClick={()=>onChange(!on)}>
-      <span style={{color:"#888",fontSize:11,fontWeight:600,fontFamily:F,letterSpacing:.5,minWidth:44,textAlign:"right"}}>{label}</span>
-      <div style={{width:38,height:22,borderRadius:11,background:on?"#FFD700":"#333",position:"relative",transition:"background .2s",flexShrink:0}}>
-        <div style={{position:"absolute",top:3,left:on?18:3,width:16,height:16,borderRadius:"50%",background:on?"#111":"#666",transition:"left .2s"}}/>
-      </div>
-    </div>
-  );
-}
+  useEffect(()=>{
+    const unsub=subscribeProfiles(profs=>{
+      setProfiles(profs.sort((a,b)=>a.name.localeCompare(b.name)));
+      setLoading(false);
+    });
+    return unsub;
+  },[]);
 
-// ── SetupCard ─────────────────────────────────────────────────────────────────
-function SetupCard({player,onChange,onRemove,canRemove,allPlayers,compact=false}){
-  const felt=player.fc||"#1B5E20",tfg=fg(felt);
-  const[showCrop,setShowCrop]=useState(false),[showFelt,setShowFelt]=useState(false),[showBalls,setShowBalls]=useState(false);
-  const teammates=allPlayers.filter(p=>p.id!==player.id);
-  const inputBorder=tfg==="#fff"?"rgba(255,255,255,.4)":"rgba(0,0,0,.3)";
+  // Auto-select my profiles on first load
+  useEffect(()=>{
+    if(profiles.length>0&&selected.size===0){
+      const mine=profiles.filter(p=>myIds.includes(p.id));
+      if(mine.length>0) setSelected(new Set(mine.map(p=>p.id)));
+    }
+  },[profiles]);
+
+  function toggleSelect(id){
+    setSelected(prev=>{const n=new Set(prev);n.has(id)?n.delete(id):n.add(id);return n;});
+  }
+
+  async function handleSaveProfile(p){
+    const stamped={...p,sndPing,sndNum,sndName,sndTotal};
+    await saveProfile(stamped);
+    if(creatingNew){ addMyProfileId(p.id); setCreatingNew(false); setSelected(prev=>new Set([...prev,p.id])); }
+    else setEditingProfile(null);
+  }
+
+  async function handleDeleteProfile(id){
+    if(!confirm("Supprimer ce profil ?"))return;
+    await deleteProfile(id);
+    removeMyProfileId(id);
+    setSelected(prev=>{const n=new Set(prev);n.delete(id);return n;});
+    setEditingProfile(null);
+  }
+
+  function handleStart(){
+    const chosen=profiles.filter(p=>selected.has(p.id));
+    if(chosen.length<MIN_P){alert(`Sélectionner au moins ${MIN_P} joueurs.`);return;}
+    if(chosen.length>MAX_P){alert(`Maximum ${MAX_P} joueurs.`);return;}
+    const stamped=chosen.map(p=>({...p,sndPing,sndNum,sndName,sndTotal}));
+    onStart(stamped,goal);
+  }
+
+  const selectedCount=selected.size;
+  const canStart=selectedCount>=MIN_P&&selectedCount<=MAX_P;
+
   return(
-    <div style={{width:"100%",borderRadius:12,overflow:"hidden",fontFamily:F}}>
-      {showCrop&&<CropModal onDone={ph=>{onChange("photo",ph);setShowCrop(false);}} onCancel={()=>setShowCrop(false)}/>}
-      {showFelt&&<WheelModal title="COULEUR TAPIS" color={player.fc} onDone={c=>{onChange("fc",c);setShowFelt(false);}} onCancel={()=>setShowFelt(false)}/>}
-      <Rail fc={felt} top={true}/>
-      <div style={{background:felt,padding:"10px 12px 12px",display:"flex",flexDirection:"column",gap:10}}>
-        {canRemove&&<div style={{display:"flex",justifyContent:"flex-end"}}>
-          <button onClick={onRemove} style={{background:"rgba(0,0,0,.2)",border:"none",borderRadius:7,color:tfg==="#fff"?"rgba(255,150,150,.9)":"rgba(180,0,0,.9)",padding:"2px 10px",fontSize:11,cursor:"pointer",fontFamily:F}}>✕ Retirer</button>
-        </div>}
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <div style={{cursor:"pointer",flexShrink:0,position:"relative"}} onClick={()=>player.photo?setShowCrop(true):setShowBalls(v=>!v)}>
-            <Ball c={player.bc} stripe={player.stripe} num={player.bn||1} photo={player.photo} size={compact?46:56}/>
-            <div style={{position:"absolute",bottom:-2,right:-2,background:"#FFD700",borderRadius:"50%",width:15,height:15,fontSize:9,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{player.photo?"📷":"🎱"}</div>
-          </div>
-          <div style={{flex:1,display:"flex",flexDirection:"column",gap:4}}>
-            <input value={player.name} maxLength={14} onChange={e=>onChange("name",e.target.value)}
-              style={{width:"100%",background:"transparent",border:"none",borderBottom:`2px solid ${inputBorder}`,color:tfg,fontSize:compact?17:20,fontWeight:700,fontFamily:F,outline:"none",padding:"2px 0"}}/>
-            <div style={{display:"flex",gap:6}}>
-              <button onClick={()=>setShowCrop(true)} style={{background:"rgba(0,0,0,.18)",border:"none",borderRadius:6,color:tfg,padding:"3px 8px",fontSize:10,cursor:"pointer",fontFamily:F}}>📷 Photo</button>
-              {player.photo&&<button onClick={()=>onChange("photo",null)} style={{background:"rgba(0,0,0,.18)",border:"none",borderRadius:6,color:tfg,opacity:.7,padding:"3px 8px",fontSize:10,cursor:"pointer",fontFamily:F}}>✕</button>}
-            </div>
+    <div style={{height:"100dvh",background:"#0d0d0d",display:"flex",flexDirection:"column",fontFamily:F,overflow:"hidden"}}>
+      {editingProfile&&(
+        <ProfileEditor profile={editingProfile} allProfiles={profiles}
+          onSave={handleSaveProfile} onCancel={()=>setEditingProfile(null)}
+          onDelete={()=>handleDeleteProfile(editingProfile.id)}/>
+      )}
+      {creatingNew&&(
+        <ProfileEditor profile={mkProfile(profiles.length)} allProfiles={profiles} isNew={true}
+          onSave={handleSaveProfile} onCancel={()=>setCreatingNew(false)}/>
+      )}
+      {showGameHist&&<GameHistoryPanel onClose={()=>setShowGameHist(false)}/>}
+
+      {/* ── Header ── */}
+      <div style={{flexShrink:0,background:"#0d0d0d",borderBottom:"1px solid #1a1a1a",padding:"max(16px,env(safe-area-inset-top)) 16px 12px"}}>
+        {/* Title row */}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+          <div style={{color:"#FFD700",fontSize:20,fontWeight:900,letterSpacing:3}}>🎱 SCOREKEEPER</div>
+          <div style={{display:"flex",gap:6}}>
+            <button onClick={()=>setShowGameHist(true)} style={{background:"#1a1a1a",border:"none",color:"#666",borderRadius:9,padding:"7px 12px",fontSize:13,cursor:"pointer",fontFamily:F}}>📋 Parties</button>
+            <button onClick={()=>setCreatingNew(true)} style={{background:"#1e1e1e",border:"none",color:"#6ddb6d",borderRadius:9,padding:"7px 12px",fontSize:13,cursor:"pointer",fontFamily:F}}>+ Joueur</button>
           </div>
         </div>
-        {showBalls&&(
-          <div style={{display:"flex",flexWrap:"wrap",gap:6,padding:"8px",background:"rgba(0,0,0,.18)",borderRadius:10}}>
-            {BALLS.map(b=>(
-              <div key={b.num} onClick={()=>{onChange("bc",b.c);onChange("stripe",b.s);onChange("bn",b.num);setShowBalls(false);}}
-                style={{cursor:"pointer",transform:player.bn===b.num?"scale(1.18)":"scale(1)",transition:"transform .1s"}}>
-                <Ball c={b.c} stripe={b.s} num={b.num} size={34}/>
-              </div>
-            ))}
+
+        {/* Objectif + Audio row */}
+        <div style={{display:"flex",alignItems:"stretch",gap:8}}>
+          <div style={{flex:1,display:"flex",alignItems:"center",gap:10,background:"#1a1a1a",borderRadius:11,padding:"9px 14px"}}>
+            <div style={{color:"#FFD700",fontSize:13,fontWeight:700}}>🏆</div>
+            <input type="number" min={0} value={goal||""} onChange={e=>setGoal(Math.max(0,parseInt(e.target.value)||0))}
+              style={{flex:1,background:"transparent",border:"none",borderBottom:"2px solid #333",color:"#fff",fontSize:18,fontWeight:700,fontFamily:F,outline:"none",padding:"2px 0",textAlign:"right"}}/>
+          </div>
+          <div style={{background:"#1a1a1a",borderRadius:11,padding:"8px 12px",display:"flex",flexDirection:"column",gap:5}}>
+            <Toggle on={sndPing}  onChange={setSndPing}  label="SON"/>
+            <Toggle on={sndNum}   onChange={setSndNum}   label="POINT"/>
+            <Toggle on={sndName}  onChange={setSndName}  label="NOM"/>
+            <Toggle on={sndTotal} onChange={setSndTotal} label="TOTAL"/>
+          </div>
+        </div>
+
+        {/* Selected count + start button */}
+        <div style={{display:"flex",alignItems:"center",gap:8,marginTop:10}}>
+          <div style={{color:"#555",fontSize:12,flex:1}}>{selectedCount<MIN_P?`Sélectionner au moins ${MIN_P} joueurs`:selectedCount>MAX_P?`Maximum ${MAX_P} joueurs`:`${selectedCount} joueur${selectedCount>1?"s":""} sélectionné${selectedCount>1?"s":""}`}</div>
+          <button onClick={handleStart} disabled={!canStart}
+            style={{background:canStart?"#FFD700":"#2a2a2a",color:canStart?"#111":"#555",border:"none",borderRadius:11,padding:"10px 24px",fontSize:15,fontWeight:800,cursor:canStart?"pointer":"default",fontFamily:F,transition:"background .2s"}}>
+            ▶ Commencer
+          </button>
+        </div>
+      </div>
+
+      {/* ── Profile list ── */}
+      <div className="scroll" style={{flex:1,padding:"8px 12px 24px"}}>
+        {loading&&<div style={{color:"#444",textAlign:"center",marginTop:40,fontSize:14}}>Chargement des profils...</div>}
+        {!loading&&profiles.length===0&&(
+          <div style={{color:"#444",textAlign:"center",marginTop:40,fontSize:14,lineHeight:2}}>
+            Aucun profil.<br/>
+            <button onClick={()=>setCreatingNew(true)} style={{background:"#1e1e1e",border:"none",color:"#6ddb6d",borderRadius:9,padding:"8px 16px",fontSize:13,cursor:"pointer",fontFamily:F,marginTop:8}}>+ Créer le premier joueur</button>
           </div>
         )}
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <div onClick={()=>setShowFelt(true)} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:7,background:"rgba(0,0,0,.18)",borderRadius:9,padding:"6px 10px"}}>
-            <div style={{width:26,height:14,borderRadius:4,background:player.fc}}/>
-            <span style={{color:tfg,fontSize:11,fontWeight:600}}>Tapis ▸</span>
-          </div>
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-          <span style={{color:tfg,opacity:.5,fontSize:10,textTransform:"uppercase",letterSpacing:.5}}>Équipe:</span>
-          <button onClick={()=>onChange("teamId",null)} style={{background:player.teamId===null?"rgba(255,215,0,.28)":"rgba(0,0,0,.18)",border:"none",borderRadius:7,color:player.teamId===null?"#FFD700":tfg,padding:"3px 9px",fontSize:11,cursor:"pointer",fontFamily:F}}>Solo</button>
-          {teammates.map(t=>(
-            <button key={t.id} onClick={()=>onChange("teamId",t.id)} style={{background:player.teamId===t.id?"rgba(255,255,255,.2)":"rgba(0,0,0,.18)",border:"none",borderRadius:7,color:tfg,padding:"3px 9px",fontSize:11,cursor:"pointer",fontFamily:F,display:"flex",alignItems:"center",gap:3}}>
-              <Ball c={t.bc} stripe={t.stripe} num={t.bn||1} size={13}/>{t.name}
-            </button>
-          ))}
-        </div>
-      </div>
-      <Rail fc={felt} top={false}/>
-    </div>
-  );
-}
+        {profiles.map(p=>{
+          const isMine=myIds.includes(p.id);
+          const isSelected=selected.has(p.id);
+          return(
+            <div key={p.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",marginBottom:6,borderRadius:12,
+              background:isSelected?p.fc+"33":"#1a1a1a",
+              border:`2px solid ${isSelected?p.fc:"transparent"}`,
+              transition:"background .15s,border .15s"}}>
+              {/* Checkbox */}
+              <div onClick={()=>toggleSelect(p.id)} style={{width:24,height:24,borderRadius:6,border:`2px solid ${isSelected?p.fc:"#444"}`,background:isSelected?p.fc:"transparent",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all .15s"}}>
+                {isSelected&&<span style={{color:fg(p.fc),fontSize:14,fontWeight:900,lineHeight:1}}>✓</span>}
+              </div>
 
-// ── Manager ───────────────────────────────────────────────────────────────────
-function Manager({gs,onClose,onUpdate}){
-  const[players,setPlayers]=useState(JSON.parse(JSON.stringify(gs.players)));
-  const upd=(id,f,v)=>setPlayers(prev=>prev.map(p=>p.id===id?{...p,[f]:v}:p));
-  const remove=(id)=>{if(players.length<=MIN_P){alert(`Minimum ${MIN_P}.`);return;}setPlayers(prev=>prev.filter(p=>p.id!==id));};
-  const add=()=>{if(players.length>=MAX_P){alert(`Maximum ${MAX_P}.`);return;}setPlayers(prev=>[...prev,mkPlayer(prev.length)]);};
-  async function apply(){const next=JSON.parse(JSON.stringify(gs));next.players=players;onUpdate(next);onClose();}
-  return(
-    <div style={{position:"fixed",inset:0,background:"#0d0d0df8",zIndex:400,display:"flex",flexDirection:"column",fontFamily:F,overflowY:"auto"}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 14px 8px",borderBottom:"1px solid #222",position:"sticky",top:0,background:"#0d0d0d",zIndex:1}}>
-        <div style={{color:"#FFD700",fontSize:14,fontWeight:700,letterSpacing:2}}>JOUEURS</div>
-        <div style={{display:"flex",gap:6}}>
-          {players.length<MAX_P&&<button onClick={add} style={{background:"#1e1e1e",border:"none",borderRadius:8,color:"#6ddb6d",padding:"5px 12px",fontSize:12,cursor:"pointer",fontFamily:F}}>+ Ajouter</button>}
-          <button onClick={apply} style={{background:"#FFD700",color:"#111",border:"none",borderRadius:8,padding:"5px 14px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:F}}>OK</button>
-          <button onClick={onClose} style={{background:"#1e1e1e",border:"none",color:"#666",borderRadius:8,padding:"5px 12px",fontSize:13,cursor:"pointer",fontFamily:F}}>Annuler</button>
-        </div>
-      </div>
-      <div style={{display:"flex",flexDirection:"column",gap:9,padding:"9px 10px 24px"}}>
-        {players.map(p=><SetupCard key={p.id} player={p} onChange={(f,v)=>upd(p.id,f,v)} onRemove={()=>remove(p.id)} canRemove={players.length>MIN_P} allPlayers={players} compact={true}/>)}
+              {/* Ball */}
+              <div onClick={()=>toggleSelect(p.id)} style={{cursor:"pointer",flexShrink:0}}>
+                <Ball c={p.bc} stripe={p.stripe} num={p.bn||1} photo={p.photo} size={44}/>
+              </div>
+
+              {/* Name + stats */}
+              <div onClick={()=>toggleSelect(p.id)} style={{flex:1,cursor:"pointer"}}>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <div style={{color:"#fff",fontWeight:700,fontSize:16,fontFamily:F}}>{p.name}</div>
+                  {isMine&&<div style={{color:"#FFD700",fontSize:10,background:"rgba(255,215,0,.15)",borderRadius:4,padding:"1px 5px"}}>moi</div>}
+                </div>
+                {p.gamesPlayed>0&&<div style={{color:"#555",fontSize:11}}>{p.gamesPlayed} partie{p.gamesPlayed>1?"s":""} · moy {p.gamesPlayed>0?Math.round((p.totalScore||0)/p.gamesPlayed):0} pts</div>}
+              </div>
+
+              {/* Edit button */}
+              <button onClick={e=>{e.stopPropagation();setEditingProfile({...p});}}
+                style={{background:"rgba(255,255,255,.06)",border:"none",color:"#666",borderRadius:8,padding:"6px 10px",fontSize:12,cursor:"pointer",fontFamily:F}}>✏️</button>
+            </div>
+          );
+        })}
+        <div style={{color:"#2a2a2a",fontSize:10,textAlign:"center",marginTop:16,fontFamily:F}}>v{VERSION}</div>
       </div>
     </div>
   );
 }
 
-// ── Setup Screen ──────────────────────────────────────────────────────────────
-function Setup({state,onDone}){
-  const[players,setPlayers]=useState(state.players?.length>=2?state.players:[mkPlayer(0),mkPlayer(1)]);
-  const[goal,setGoal]=useState(state.goal||0);
-  // Restore audio prefs from existing players if returning from a game
-  const p0=state.players?.[0];
-  const[sndPing,setSndPing]=useState(p0?.sndPing!==false);
-  const[sndNum,setSndNum]=useState(p0?.sndNum!==false);
-  const[sndName,setSndName]=useState(p0?.sndName!==false);
-  const[sndTotal,setSndTotal]=useState(p0?.sndTotal!==false);
-  const upd=(id,f,v)=>setPlayers(prev=>prev.map(p=>p.id===id?{...p,[f]:v}:p));
-  const remove=(id)=>{if(players.length<=MIN_P)return;setPlayers(prev=>prev.filter(p=>p.id!==id));}
-  const add=()=>{if(players.length>=MAX_P)return;setPlayers(prev=>[...prev,mkPlayer(prev.length)]);}
-  async function start(){
-    const stamped=players.map(p=>({...p,sndPing,sndNum,sndName,sndTotal}));
-    const next={...mkState(goal),players:stamped,done:true,v:(state.v||0)+1,goal};
-    await saveState(next);onDone(next);
-  }
-  return(
-    <div style={{minHeight:"100dvh",background:"#0d0d0d",display:"flex",flexDirection:"column",alignItems:"center",padding:"max(20px,env(safe-area-inset-top)) 14px 32px",gap:12,overflowY:"auto",WebkitOverflowScrolling:"touch"}}>
-      <div style={{color:"#FFD700",fontSize:22,fontWeight:900,letterSpacing:3,fontFamily:F}}>🎱 SCOREKEEPER</div>
-      <div style={{color:"#444",fontSize:11,fontFamily:F,textAlign:"center",marginTop:-6}}>🎱 bille · 📷 photo · Tapis → couleur</div>
-      <div style={{color:"#2a2a2a",fontSize:10,fontFamily:F,letterSpacing:1,marginTop:-4}}>v{VERSION}</div>
-      <div style={{display:"flex",alignItems:"stretch",gap:8,width:"100%",maxWidth:400}}>
-        <div style={{flex:1,display:"flex",alignItems:"center",gap:10,background:"#1a1a1a",borderRadius:12,padding:"10px 14px"}}>
-          <div style={{color:"#FFD700",fontSize:13,fontWeight:700,fontFamily:F}}>🏆</div>
-          <input type="number" min={0} value={goal||""} onChange={e=>setGoal(Math.max(0,parseInt(e.target.value)||0))}
-            style={{flex:1,background:"transparent",border:"none",borderBottom:"2px solid #333",color:"#fff",fontSize:18,fontWeight:700,fontFamily:F,outline:"none",padding:"2px 0",textAlign:"right"}}/>
-        </div>
-        <div style={{background:"#1a1a1a",borderRadius:12,padding:"10px 14px",display:"flex",flexDirection:"column",gap:6,justifyContent:"center"}}>
-          <Toggle on={sndPing} onChange={setSndPing} label="SON"/>
-          <Toggle on={sndNum}  onChange={setSndNum}  label="POINT"/>
-          <Toggle on={sndName} onChange={setSndName} label="NOM"/>
-          <Toggle on={sndTotal} onChange={setSndTotal} label="TOTAL"/>
-        </div>
-      </div>
-      <div style={{display:"flex",gap:8,alignItems:"center"}}>
-        {players.length<MAX_P&&<button onClick={add} style={{background:"#1e1e1e",border:"none",borderRadius:10,color:"#6ddb6d",padding:"7px 14px",fontSize:13,cursor:"pointer",fontFamily:F}}>+ Joueur</button>}
-        <span style={{color:"#444",fontSize:11,fontFamily:F}}>{players.length} joueur{players.length>1?"s":""}</span>
-      </div>
-      {players.map(p=><SetupCard key={p.id} player={p} onChange={(f,v)=>upd(p.id,f,v)} onRemove={()=>remove(p.id)} canRemove={players.length>MIN_P} allPlayers={players}/>)}
-      <button onClick={start} style={{background:"#FFD700",color:"#111",border:"none",borderRadius:12,padding:"14px 52px",fontSize:17,fontWeight:800,fontFamily:F,cursor:"pointer",marginTop:6}}>▶ Commencer</button>
-    </div>
-  );
-}
-
-// ── Game ──────────────────────────────────────────────────────────────────────
-function Game({init}){
-  const[gs,setGs]=useState(init);
+// ── Game Screen ───────────────────────────────────────────────────────────────
+function Game({initialState,onExit}){
+  const[gs,setGs]=useState(initialState);
   const[showHist,setShowHist]=useState(false);
-  const[showMgr,setShowMgr]=useState(false);
   const[correctP,setCorrectP]=useState(null);
   const[editP,setEditP]=useState(null);
   const[toast,setToast]=useState(null);
   const[victor,setVictor]=useState(null);
-  const vRef=useRef(init.v);
+  const vRef=useRef(initialState.v||0);
   const won=useRef(new Set());
 
-  // Firebase realtime subscription (replaces polling)
   useEffect(()=>{
-    const unsub=subscribeState(remote=>{
-      if(remote&&remote.v>vRef.current){vRef.current=remote.v;setGs(remote);}
+    const unsub=subscribeGame(remote=>{
+      if(remote&&(remote.v||0)>vRef.current){vRef.current=remote.v||0;setGs(remote);}
     });
     return unsub;
   },[]);
@@ -851,9 +756,8 @@ function Game({init}){
         if(p.score>=next.goal&&!won.current.has(p.id)){won.current.add(p.id);setVictor({...p});break;}
       }
     }
-    setGs(next);await saveState(next);
+    setGs(next);await saveGameState(next);
   }
-
   function toast_(msg,c="#FFD700"){setToast({msg,c});setTimeout(()=>setToast(null),700);}
 
   async function addPoint(player,delta){
@@ -877,11 +781,31 @@ function Game({init}){
     await push(next);
   }
 
-  async function handleReset(){
-    if(!confirm("Nouvelle partie ? Les scores seront remis à zéro."))return;
-    // Go back to setup screen with current players preserved (scores zeroed)
-    const next={...mkState(gs.goal),players:gs.players.map(p=>({...p,score:0})),done:false,v:(vRef.current||0)+1,goal:gs.goal,history:[]};
-    won.current=new Set();vRef.current=next.v;setGs(next);await saveState(next);
+  async function handleEndGame(){
+    if(!confirm("Terminer la partie et retourner à la sélection ?"))return;
+    // Save game to history
+    await saveGameHistory({
+      startedAt:gs.startedAt||Date.now(),
+      endedAt:Date.now(),
+      goal:gs.goal||0,
+      players:gs.players.map(p=>({id:p.id,name:p.name,bc:p.bc,fc:p.fc,stripe:p.stripe,bn:p.bn,photo:p.photo,score:p.score}))
+    });
+    // Update player stats in Firebase
+    for(const p of gs.players){
+      try{
+        const snap=await ref(`players/${p.id}`).once('value');
+        if(snap.exists()){
+          const prof=snap.val();
+          await ref(`players/${p.id}`).update({
+            gamesPlayed:(prof.gamesPlayed||0)+1,
+            totalScore:(prof.totalScore||0)+p.score,
+          });
+        }
+      }catch(_){}
+    }
+    // Clear game state
+    await saveGameState({v:0,done:false});
+    onExit();
   }
 
   async function applyCorrection(player,delta){
@@ -903,6 +827,8 @@ function Game({init}){
     const next=JSON.parse(JSON.stringify(gs));
     const pi=next.players.findIndex(p=>p.id===edited.id);
     if(pi>=0)next.players[pi]={...next.players[pi],...edited};
+    // Also update global profile
+    await saveProfile(edited);
     setEditP(null);await push(next);
   }
 
@@ -922,37 +848,34 @@ function Game({init}){
 
   return(
     <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"#0d0d0d",padding:"5px 5px 0",gap:5,fontFamily:F,overflow:"hidden"}}>
-      <style>{`@keyframes flashOut{0%{opacity:1}100%{opacity:0}}@keyframes toastPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.82)}30%{opacity:1;transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0}}`}</style>
       {toast&&<div style={{position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",background:toast.c,color:fg(toast.c),padding:"10px 24px",borderRadius:12,fontWeight:800,fontSize:16,zIndex:800,pointerEvents:"none",animation:"toastPop .7s ease-out forwards",fontFamily:F}}>{toast.msg}</div>}
+
       {goal>0&&<div style={{display:"flex",gap:4,flexShrink:0,height:8,borderRadius:4,overflow:"hidden"}}>
-        {players.map(p=>{
-          const pct=Math.min(100,Math.max(0,(p.score/goal)*100));
-          return <div key={p.id} style={{flex:1,background:"#1a1a1a",borderRadius:2,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:p.bc,transition:"width .4s"}}/></div>;
-        })}
+        {players.map(p=>{const pct=Math.min(100,Math.max(0,(p.score/goal)*100));return<div key={p.id} style={{flex:1,background:"#1a1a1a",borderRadius:2,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:p.bc,transition:"width .4s"}}/></div>;})}
       </div>}
+
       <div style={{flex:1,minHeight:0,display:"grid",gridTemplateColumns:useGrid?"1fr 1fr":"1fr",gridTemplateRows:`repeat(${rows},1fr)`,gap:5}}>
         {slots.map(({p,tm})=>{
           const leaderScore=Math.max(...players.map(x=>x.score));
           const isLeader=players.length>1&&p.score===leaderScore&&p.score>0;
           return(
-            <Panel key={p.id} player={p}
-              onPlus={()=>addPoint(p,1)} onMinus={()=>addPoint(p,-1)}
+            <Panel key={p.id} player={p} onPlus={()=>addPoint(p,1)} onMinus={()=>addPoint(p,-1)}
               onLong={()=>setEditP(p)} teamMate={tm} ballSize={bs}
-              onScoreTap={target=>setCorrectP(target)} isLeader={isLeader}
-            />
+              onScoreTap={target=>setCorrectP(target)} isLeader={isLeader}/>
           );
         })}
       </div>
+
       <div style={{display:"flex",gap:5,paddingBottom:"max(7px,env(safe-area-inset-bottom))",flexShrink:0}}>
         <button onClick={()=>setShowHist(true)} style={{flex:.65,background:"#1a1a1a",color:"#666",border:"none",borderRadius:11,padding:"12px 0",fontSize:16,cursor:"pointer"}}>📋</button>
-        <button onClick={()=>setShowMgr(true)} style={{flex:.65,background:"#1a1a1a",color:"#666",border:"none",borderRadius:11,padding:"12px 0",fontSize:16,cursor:"pointer"}}>👥</button>
-        <button onClick={handleUndo} style={{flex:1.8,background:"#1a1a1a",color:"#9B59B6",border:"none",borderRadius:11,padding:"12px 0",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:F}}>↩ Annuler</button>
-        <button onClick={handleReset} style={{flex:.55,background:"#1a1a1a",color:"#444",border:"none",borderRadius:11,padding:"12px 0",fontSize:14,cursor:"pointer"}}>↺</button>
+        <button onClick={handleUndo} style={{flex:1.4,background:"#1a1a1a",color:"#9B59B6",border:"none",borderRadius:11,padding:"12px 0",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:F}}>↩ Annuler</button>
+        <button onClick={handleEndGame} style={{flex:2,background:"#1a1a1a",color:"#E63946",border:"1px solid #E6394644",borderRadius:11,padding:"12px 0",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:F}}>⏹ Fin</button>
+        <button onClick={async()=>{if(!confirm("Réinitialiser les scores ?"))return;const next=JSON.parse(JSON.stringify(gs));next.players=next.players.map(p=>({...p,score:0}));next.history=[];await push(next);}} style={{flex:.55,background:"#1a1a1a",color:"#444",border:"none",borderRadius:11,padding:"12px 0",fontSize:14,cursor:"pointer"}}>↺</button>
       </div>
-      {showHist&&<HistPanel history={gs.history} players={players} onClose={()=>setShowHist(false)}/>}
-      {showMgr&&<Manager gs={gs} onClose={()=>setShowMgr(false)} onUpdate={next=>push(next)}/>}
+
+      {showHist&&<ScoreHistPanel history={gs.history||[]} players={players} onClose={()=>setShowHist(false)}/>}
       {correctP&&<CorrectModal player={correctP} onApply={d=>applyCorrection(correctP,d)} onCancel={()=>setCorrectP(null)}/>}
-      {editP&&<EditModal player={editP} allPlayers={players} onSave={saveEdit} onCancel={()=>setEditP(null)}/>}
+      {editP&&<ProfileEditor profile={editP} allProfiles={players} onSave={saveEdit} onCancel={()=>setEditP(null)}/>}
       {victor&&<Victory player={victor} goal={goal} onDismiss={()=>setVictor(null)}/>}
     </div>
   );
@@ -960,18 +883,39 @@ function Game({init}){
 
 // ── Root ──────────────────────────────────────────────────────────────────────
 function App(){
-  const[gs,setGs]=useState(null),[loading,setLoading]=useState(true);
+  const[screen,setScreen]=useState('loading'); // 'loading' | 'select' | 'game'
+  const[gameState,setGameState]=useState(null);
+
   useEffect(()=>{
-    initFirebase();
-    loadState().then(r=>{setGs(r?.done?r:mkState(0));setLoading(false);});
+    initFB();
+    loadGameState().then(gs=>{
+      // If there's an active game with players, go straight to game
+      if(gs&&gs.players&&gs.players.length>=2&&gs.v>0){
+        setGameState(gs);setScreen('game');
+      }else{
+        setScreen('select');
+      }
+    });
   },[]);
-  if(loading) return <div style={{height:"100dvh",background:"#0d0d0d",display:"flex",alignItems:"center",justifyContent:"center",color:"#FFD700",fontFamily:F,fontSize:22,fontWeight:900,letterSpacing:3}}>🎱 SCOREKEEPER</div>;
-  if(!gs?.done) return <Setup state={gs} onDone={setGs}/>;
-  return <Game init={gs}/>;
+
+  async function handleStart(players,goal){
+    const gs=mkGameState(players,goal);
+    await saveGameState(gs);
+    setGameState(gs);setScreen('game');
+  }
+
+  function handleExit(){
+    setGameState(null);setScreen('select');
+  }
+
+  if(screen==='loading') return(
+    <div style={{height:"100dvh",background:"#0d0d0d",display:"flex",alignItems:"center",justifyContent:"center",color:"#FFD700",fontFamily:F,fontSize:22,fontWeight:900,letterSpacing:3}}>🎱 SCOREKEEPER</div>
+  );
+  if(screen==='select') return <SelectionScreen onStart={handleStart}/>;
+  return <Game initialState={gameState} onExit={handleExit}/>;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-
 </script>
 </body>
 </html>
