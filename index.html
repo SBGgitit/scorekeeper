@@ -53,18 +53,22 @@
     // 3. Add a web app, copy the config object here
     // 4. In Realtime Database → Rules, set both read/write to true for testing:
     //    { "rules": { ".read": true, ".write": true } }
- const firebaseConfig = {
-  apiKey: "AIzaSyBZygXzD4PCymUTr8N04mzchqT5U6CMrx8",
-  authDomain: "poscrsbg.firebaseapp.com",
-  databaseURL: "https://poscrsbg-default-rtdb.firebaseio.com",
-  projectId: "poscrsbg",
-  storageBucket: "poscrsbg.firebasestorage.app",
-  messagingSenderId: "619992133829",
-  appId: "1:619992133829:web:6cc4203541aea09d5800ac"
-};
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-3LBri0lPGpdgvI0cBvwzyqDE0BCW304",
+    authDomain: "pooltimego.firebaseapp.com",
+    databaseURL: "https://pooltimego-default-rtdb.firebaseio.com",
+    projectId: "pooltimego",
+    storageBucket: "pooltimego.firebasestorage.app",
+    messagingSenderId: "1074352863595",
+    appId: "1:1074352863595:web:dbc4ee9986ef1ed368b42e"
+  };
 
     // Room ID — all devices sharing this ID play together.
     // Change it to start a fresh game session. Use any string.
